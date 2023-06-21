@@ -1,89 +1,60 @@
-from flask import Flask, jsonify, request
+from flask import Flask, request, jsonify
 import pyodbc
+import pandas as pd
+from config import servers
 
 app = Flask(__name__)
 
-# SQL Server connection settings
-server = '127.0.0.1'
-database = 'auto'
-username = 'sa'
-password = '122345'
-driver = '{ODBC Driver 17 for SQL Server}'
-
 # Establishing the database connection
 def create_connection():
-    connection_string = f"DRIVER={driver};SERVER={server};DATABASE={database};UID={username};PWD={password}"
-    conn = pyodbc.connect(connection_string)
-    return conn
+    server_config = servers['server1']
+    return pyodbc.connect('DRIVER=' + server_config['driver'] + ';SERVER=' + server_config['server'] + ';DATABASE=' + server_config['database'] + ';UID=' + server_config['username'] + ';PWD=' + server_config['password'])
 
-# SELECT operation
-@app.route('/data', methods=['GET'])
-def get_data():
+# Select operation
+@app.route('/select', methods=['GET'])
+def select_data():
     conn = create_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM [auto].[dbo].[data]')
+    query = "SELECT TOP 100 * FROM [SAR].[dbo].[Routine_RequestLab] order by id desc"
+    cursor.execute(query)
     rows = cursor.fetchall()
+    # Convert result set to a list of dictionaries
+    columns = [column[0] for column in cursor.description]
+    results = [dict(zip(columns, row)) for row in rows]
 
-    data = []
-    for row in rows:
-        # Assuming the table has three columns: id, name, and age
-        item = {
-            'id': row.id,
-            'name': row.name,
-            'age': row.age
-        }
-        data.append(item)
+    return jsonify(results)
 
-    conn.close()
-
-    return jsonify(data)
-
-# INSERT operation
-@app.route('/data', methods=['POST'])
-def add_data():
-    conn = create_connection()
+# Insert operation
+@app.route('/insert', methods=['POST'])
+def insert_data():
+    data = request.get_json()
     cursor = conn.cursor()
-
-    # Assuming the request data contains 'name' and 'age' fields
-    name = request.json['name']
-    age = request.json['age']
-
-    # Inserting the data into the table
-    cursor.execute("INSERT INTO your_table (name, age) VALUES (?, ?)", (name, age))
+    query = "INSERT INTO your_table (column1, column2) VALUES (?, ?)"
+    cursor.execute(query, (data['value1'], data['value2']))
     conn.commit()
-    conn.close()
 
-    return 'Data added successfully'
+    return 'Data inserted successfully'
 
-# DELETE operation
-@app.route('/data/<int:id>', methods=['DELETE'])
-def delete_data(id):
-    conn = create_connection()
+# Delete operation
+@app.route('/delete/<int:record_id>', methods=['DELETE'])
+def delete_data(record_id):
     cursor = conn.cursor()
-
-    # Deleting the data from the table based on the provided id
-    cursor.execute("DELETE FROM your_table WHERE id = ?", (id,))
+    query = "DELETE FROM your_table WHERE id = ?"
+    cursor.execute(query, (record_id,))
     conn.commit()
-    conn.close()
 
     return 'Data deleted successfully'
 
-# UPDATE operation
-@app.route('/data/<int:id>', methods=['PUT'])
-def update_data(id):
-    conn = create_connection()
+# Update operation
+@app.route('/update/<int:record_id>', methods=['PUT'])
+def update_data(record_id):
+    data = request.get_json()
     cursor = conn.cursor()
-
-    # Assuming the request data contains 'name' and 'age' fields
-    name = request.json['name']
-    age = request.json['age']
-
-    # Updating the data in the table based on the provided id
-    cursor.execute("UPDATE your_table SET name = ?, age = ? WHERE id = ?", (name, age, id))
+    query = "UPDATE your_table SET column1 = ?, column2 = ? WHERE id = ?"
+    cursor.execute(query, (data['value1'], data['value2'], record_id))
     conn.commit()
-    conn.close()
 
     return 'Data updated successfully'
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=5000)
