@@ -14,3 +14,9 @@ servers = {
         'driver': '{ODBC Driver 17 for SQL Server}'
     }
 }
+
+
+column_ = {
+    'query1' : "[ReqNo],[JobType],[Branch],[RequestSection],[CustFull],[Code],[SampleCode],[SampleStatus],[SampleType],[ProcessReportName],[SampleRemark],[SamplingDate],[InstrumentName],[ItemName],[ItemStatus],[AnalysisDueDate],[RemarkNo]",
+    'query2' : "[RemarkNo],[CustShort],[SamplingDate],[ReceiveDate],[DueDate],[SampleType],[ProcessReportName],[SampleRemark]"
+}
