@@ -34,19 +34,24 @@ def select_data():
     conn = create_connection()
     cursor = conn.cursor()
 
-    filters = []
-    if key1:
-        filters.append(f"SampleCode = '{key1}'")
-    if key2:
-        filters.append(f"InstrumentName = '{key2}'")
-    if key3:
-        filters.append(f"RemarkNo = '{key3}'")
-
-    where_clause = " AND ".join(filters)
-    if where_clause:
-        where_clause = "WHERE " + where_clause
-
-    query = f"SELECT TOP 100 {column_['query1']} FROM [SAR].[dbo].[Routine_RequestLab] WHERE ItemStatus = 'APPROVE' {where_clause} ORDER BY id DESC"
+    if key1 and not key2 and not key3:
+        # Build the SQL query with only the first key
+        query = f"SELECT TOP 100 {column_['query1']} FROM [SAR].[dbo].[Routine_RequestLab] WHERE ItemStatus = 'APPROVE' AND SampleCode = '{key1}' ORDER BY id DESC"
+    elif key1 and key2 and not key3:
+        # Build the SQL query with the first and second keys
+        query = f"SELECT TOP 100 {column_['query1']} FROM [SAR].[dbo].[Routine_RequestLab] WHERE ItemStatus = 'APPROVE' AND SampleCode = '{key1}' AND InstrumentName = '{key2}' ORDER BY id DESC"
+    elif key1 and not key2 and key3:
+        # Build the SQL query with the first and third keys
+        query = f"SELECT TOP 100 {column_['query1']} FROM [SAR].[dbo].[Routine_RequestLab] WHERE ItemStatus = 'APPROVE' AND SampleCode = '{key1}' AND RemarkNo = '{key3}' ORDER BY id DESC"
+    elif not key1 and key2 and key3:
+        # Build the SQL query with the second and third keys
+        query = f"SELECT TOP 100 {column_['query1']} FROM [SAR].[dbo].[Routine_RequestLab] WHERE ItemStatus = 'APPROVE' AND InstrumentName = '{key2}' AND RemarkNo = '{key3}' ORDER BY id DESC"
+    elif key1 and key2 and key3:
+        # Build the SQL query with all three keys
+        query = f"SELECT TOP 100 {column_['query1']} FROM [SAR].[dbo].[Routine_RequestLab] WHERE ItemStatus = 'APPROVE' AND SampleCode = '{key1}' AND InstrumentName = '{key2}' AND RemarkNo = '{key3}' ORDER BY id DESC"
+    else:
+        # Build the SQL query without any filtering
+        query = f"SELECT TOP 100 {column_['query1']} FROM [SAR].[dbo].[Routine_RequestLab] WHERE ItemStatus = 'APPROVE' ORDER BY id DESC"
 
     print("Query:", query)
     cursor.execute(query)
