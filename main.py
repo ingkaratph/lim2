@@ -65,15 +65,23 @@ def select_data():
 
 
 # Insert operation
-@app.route("/insert", methods=["POST"])
+@app.route("/requestbalance", methods=["POST"])
 def insert_data():
-    data = request.get_json()
+    conn = create_connection()
     cursor = conn.cursor()
-    query = "INSERT INTO your_table (column1, column2) VALUES (?, ?)"
-    cursor.execute(query, (data["value1"], data["value2"]))
-    conn.commit()
+    print(request.json)
+    input = request.json
+    name = (input['name'])
+    query = f"SELECT TOP 100 {column_['query1']} FROM [SAR].[dbo].[Routine_RequestLab] WHERE ItemStatus = 'LIST NORMAL' AND UserListAnalysis = '{name}' ORDER BY id DESC"
 
-    return "Data inserted successfully"
+    cursor.execute(query) 
+    rows = cursor.fetchall()
+    #
+    # Convert result set to a list of dictionaries
+    columns = [column[0] for column in cursor.description]
+    results = [dict(zip(columns, row)) for row in rows]
+
+    return jsonify(results)
 
 
 # Delete operation
