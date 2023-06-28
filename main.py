@@ -4,7 +4,15 @@ import pyodbc
 import pandas as pd
 from config import servers, column_
 
+from flask_cors import CORS
+
 app = Flask(__name__)
+CORS(app)
+cors = CORS(app, resource={
+    r"/*":{
+        "origins":"*"
+    }
+})
 
 
 # Establishing the database connection
@@ -22,6 +30,7 @@ def create_connection():
         + ";PWD="
         + server_config["password"]
     )
+
 
 
 # Select operation
@@ -66,6 +75,9 @@ def select_data():
 
 # Insert operation
 @app.route("/requestbalance", methods=["POST"])
+
+
+
 def insert_data():
     conn = create_connection()
     cursor = conn.cursor()
