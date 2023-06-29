@@ -8,11 +8,7 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
-cors = CORS(app, resource={
-    r"/*":{
-        "origins":"*"
-    }
-})
+cors = CORS(app, resource={r"/*": {"origins": "*"}})
 
 
 # Establishing the database connection
@@ -30,7 +26,6 @@ def create_connection():
         + ";PWD="
         + server_config["password"]
     )
-
 
 
 # Select operation
@@ -75,20 +70,18 @@ def select_data():
 
 # Insert operation
 @app.route("/requestbalance", methods=["POST"])
-
-
-
 def insert_data():
     conn = create_connection()
     cursor = conn.cursor()
     print(request.json)
     input = request.json
-    name = (input['name'])
-    query = f"SELECT TOP 100 {column_['query1']} FROM [SAR].[dbo].[Routine_RequestLab] WHERE ItemStatus = 'LIST NORMAL' AND UserListAnalysis = '{name}' ORDER BY id DESC"
+    keyword1 = input["keyword1"]
+    keyword2 = input["keyword2"]
+    query = f"SELECT TOP 100 * FROM [SAR].[dbo].[Routine_RequestLab] WHERE ItemStatus = 'LIST NORMAL' AND (UserListAnalysis = '{keyword1}' OR InstrumentName = '{keyword1}') ORDER BY id DESC"
 
-    cursor.execute(query) 
+    cursor.execute(query)
     rows = cursor.fetchall()
-    #
+
     # Convert result set to a list of dictionaries
     columns = [column[0] for column in cursor.description]
     results = [dict(zip(columns, row)) for row in rows]
