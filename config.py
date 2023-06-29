@@ -17,6 +17,6 @@ servers = {
 
 
 column_ = {
-    'query1' : "[ReqNo],[JobType],[Branch],[RequestSection],[CustFull],[Code],[SampleCode],[SampleStatus],[SampleType],[ProcessReportName],[SampleRemark],[SamplingDate],[InstrumentName],[ItemName],[ItemStatus],[AnalysisDueDate],[RemarkNo]",
+    'query1' : "[ReqNo],[JobType],[Branch],[RequestSection],[ReqDate],[CustFull],[CustShort],[Code],[SampleCode],[SampleStatus],[SampleType],[ProcessReportName],[SamplingDate],[InstrumentName],[ItemName],[ItemStatus],[AnalysisDueDate],[RemarkNo]",
     'query2' : "[RemarkNo],[CustShort],[SamplingDate],[ReceiveDate],[DueDate],[SampleType],[ProcessReportName],[SampleRemark]"
 }

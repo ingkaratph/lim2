@@ -84,7 +84,7 @@ def insert_data():
     print(request.json)
     input = request.json
     name = (input['name'])
-    query = f"SELECT TOP 100 * FROM [SAR].[dbo].[Routine_RequestLab] WHERE ItemStatus = 'LIST NORMAL' AND (UserListAnalysis = '{name}' or InstrumentName = '{name}')  ORDER BY id DESC"
+    query = f"SELECT TOP 100 {column_['query1']} FROM [SAR].[dbo].[Routine_RequestLab] WHERE ItemStatus = 'LIST NORMAL' AND UserListAnalysis = '{name}' AND InstrumentName IN ('ICP', 'Sludge', 'Acid Number(Nox Rust)', 'CO32-', 'Cwt', 'Cwt.3 layers', 'Cwt. PULS', 'Solid Content(Nox Rust)', 'SSM') ORDER BY id DESC"
 
     cursor.execute(query) 
     rows = cursor.fetchall()
