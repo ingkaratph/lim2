@@ -75,9 +75,6 @@ def select_data():
 
 # Insert operation
 @app.route("/requestbalance", methods=["POST"])
-
-
-
 def insert_data():
     conn = create_connection()
     cursor = conn.cursor()
